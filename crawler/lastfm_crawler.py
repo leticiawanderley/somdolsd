@@ -1,10 +1,12 @@
 import requests, json
 from datetime import datetime
 from pymongo import MongoClient
+from kafka import KafkaProducer
 
 # TODO: Fetch this from database
 API_KEY = '3f65c66d50219f19adf936214025f697'
 DATABASE = MongoClient().dataset
+PRODUCER = KafkaProducer()
 
 def playing_now_from_user(user):
 	api_call = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + user + '&api_key=' + API_KEY + '&limit=10&format=json'
@@ -33,32 +35,41 @@ def get_song_tags(track, artist):
 		pass
 
 if __name__ == '__main__':
-	cursor_users = DATABASE.users.find()
+	while True:
+		cursor_users = DATABASE.users.find()
+		cursor_users.rewind()		
 
-	# Iterate over every single user stored on database
-	for document in cursor_users:
-		username = document["last_fm_username"]
-		last_song_info = playing_now_from_user(username) 
-		if len(last_song_info) > 0:		
-			last_played_song = DATABASE.users.find_one({"last_fm_username" : username})["last_played_song"]
-			# TODO: Check time (users can listen to the same song multiple times)
-			# TODO: Check if there's more than one song to be processed
-			if last_played_song != "%s - %s" % (last_song_info["music_name"], last_song_info["artist_name"]):	
-				# Updating user last_song for control purposes
-				result = DATABASE.users.update_one(
-				    {"last_fm_username": username},
-				    {
-				        "$set": {
-				            "last_played_song": "%s - %s" % (last_song_info["music_name"], last_song_info["artist_name"])
-				        },
-				    }
-				)	
+		# Iterate over every single user stored on database
+		for document in cursor_users:
+			username = document["last_fm_username"]
+			last_song_info = playing_now_from_user(username) 
+			if len(last_song_info) > 0:		
+				last_played_song = DATABASE.users.find_one({"last_fm_username" : username})["last_played_song"]
+				# TODO: Check time (users can listen to the same song multiple times)
+				# TODO: Check if there's more than one song to be processed
+				if last_played_song != "%s - %s" % (last_song_info["music_name"], last_song_info["artist_name"]):	
+					
+					# Updating user last_song for control purposes
+					result = DATABASE.users.update_one(
+					    {"last_fm_username": username},
+					    {
+					        "$set": {
+					            "last_played_song": "%s - %s" % (last_song_info["music_name"], last_song_info["artist_name"])
+					        },
+					    }
+					)	
 
-				last_song_info["listening_time"] = datetime.now().isoformat()
-				last_song_info["tags"] =  get_song_tags(last_song_info["music_name"], last_song_info["artist_name"])["toptags"]["tag"]
-				# Storing listening activity
-				DATABASE.tracks.insert_one(
-					last_song_info
-				)
+					# Increment last listening activity
+					last_song_info["listening_time"] = datetime.now().isoformat()
+					last_song_info["tags"] =  get_song_tags(last_song_info["music_name"], last_song_info["artist_name"])["toptags"]["tag"]
+					last_song_info["user"] = document["name"]
 
-				# TODO: Send new listening activity to kafka producer
+					# Storing listening activity
+					DATABASE.tracks.insert_one(
+						last_song_info
+					)
+
+					# Send new listening activity to kafka producer
+					PRODUCER.send('test', str(last_song_info) )
+
+					

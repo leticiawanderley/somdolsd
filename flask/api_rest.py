@@ -11,7 +11,6 @@ from html_templater import bokeh_headers
 from pymongo import MongoClient
 from bson import json_util
 
-
 app = Flask(__name__)
 DATABASE = MongoClient().dataset
 
@@ -88,6 +87,30 @@ def user_activity():
 	request_dict = request.args.to_dict()
 	cursor = DATABASE.tracks.find({"user_name" : request_dict["username"]})
 	return json.dumps([doc for doc in cursor], default=json_util.default)
+
+@app.route('/users', methods=['POST'])
+def create_user():
+	# TODO: Tolerance
+    name = request.form['name']
+    lastfm_username = request.form['lastfm_username']
+    room = request.form['room']
+
+    result = DATABASE.users.insert_one(
+    	{
+    		"name": name,
+    		"last_fm_username": lastfm_username,
+    		"room": room,
+    		"last_played_song": ""
+
+    	}
+	)
+    return str(result.inserted_id), 200
+
+@app.route('/users', methods=['GET'])
+def get_users():
+	cursor = DATABASE.users.find()
+	return json.dumps([doc for doc in cursor], default=json_util.default)
+
 
 @app.after_request
 def after_request(response):
