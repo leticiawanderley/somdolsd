@@ -7,13 +7,22 @@ somDoLSD.controller('graphsController', function($scope, graphsService) {
   vm.topUsers = [];
   vm.topArtists = [];
 
-  graphsService.getTopUsers().then(function(d) {
+  graphsService.getTopUsers().then(
+    function(d) {
       vm.topUsers = d;
-  });
+    },
+    function(d) {
+      vm.topUsers = [];
+    });
 
-  graphsService.getTopArtists().then(function(d) {
+  graphsService.getTopArtists().then(
+    function(d) {
       vm.topArtists = d;
-  });
+    },
+    function(d) {
+      vm.topArtists = [];
+    }
+  );
 });
 
 somDoLSD.directive('barChartUsers', function(){

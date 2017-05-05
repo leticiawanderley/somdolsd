@@ -10,7 +10,7 @@ body {
   color: rgba(229, 80, 80, 0.5);
   position: relative;
   margin: 0;
-  padding-bottom: 6rem;
+  padding-bottom: 8rem;
   min-height: 100%;
 }
 
@@ -34,6 +34,7 @@ h3 {
   right: 0;
   bottom: 0;
   left: 0;
+  height: 90px;
   text-align: center;
   background-color: rgba(229, 80, 80, 0.3);
 }
@@ -78,7 +79,7 @@ h3 {
 }
 
 .x-axis-group text {
-    font-size: 12px;
+    font-size: 15px;
     font-family: 'Permanent Marker', cursive;
     word-break: break-all;
 }
