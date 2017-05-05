@@ -3,6 +3,7 @@
 import pandas as pd
 from flask import Flask, request, jsonify, redirect, url_for
 from sys import argv
+from ast import literal_eval
 
 from plot.bars import HotUsers
 
@@ -14,12 +15,12 @@ def homepage():
 
 @app.route('/hot_users', methods=["GET"])
 def hot_users():
-	sample = [{"index":2,"user":"Listener","hotness":59},{"index":1,"user":"Cicranis","hotness":43},{"index":0,"user":"Fulano da Silva","hotness":30},{"index":5,"user":"Hackeador","hotness":30},{"index":3,"user":"Lorem Ipsum","hotness":25},{"index":4,"user":"Bla bla","hotness":11}]
+	sample = [{"index":2,"user":"Listener","hotness":59},{"index":1,"user":"Cicranis","hotness":43},{"index":0,"user":"Fulano da Silva","hotness":30},{"index":5,"user":"Hackeador","hotness":30},{"index":3,"user":"Lorem Ipsum","hotness":25},{"index":4,"user":"Bla bla","hotness":11},{"index":4,"user":"Bla bla Bla","hotness":12},{"index":4,"user":"Outra pessoa","hotness":27}]
 	return jsonify(sample)
 
-@app.route('/hot_users_bar', methods=["GET"])
+@app.route('/hot_users_bar')
 def hot_users_bar():
-	sample = hot_users()
+	sample = literal_eval(hot_users().data)
 	sample_df = pd.DataFrame.from_dict(sample)
 	return HotUsers().bar(sample, plot=False)
 
