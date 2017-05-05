@@ -1,8 +1,16 @@
 <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-12 register" ng-controller="registerController as vm">
   <form ng-submit="vm.add()">
     <div class="row form-add">
-      <label for="username">Digite o seu username Last.fm</label>
-      <input id="username" ng-model="vm.username" type="text"/>
+      <div><label for="username">Digite o seu username Last.fm</label></div>
+      <div><input id="username" ng-model="vm.username" type="text"/></div>
+    </div>
+    <div class="row form-add">
+      <div><label for="nome">Digite o seu nome</label></div>
+      <div><input id="nome" ng-model="vm.nome" type="text"/></div>
+    </div>
+    <div class="row form-add">
+      <div><label for="sala">Selecione a sua sala</label></div>
+      <div><select id="sala" ng-model="vm.sala" ng-options="s for s in vm.salas"></select></div>
     </div>
     <div class="row btn-add">
       <input type="submit" value="Adicionar"/>

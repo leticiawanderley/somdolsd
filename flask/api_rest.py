@@ -15,22 +15,6 @@ app = Flask(__name__)
 DATABASE = MongoClient().dataset
 
 
-@app.route("/")
-def homepage():
-	html_url = "http://10.30.100.60:8000"
-	html_home = str(requests.get(html_url).text)
-
-	hot_users_components = hot_users_bar()
-	hot_artists_components = hot_artists_bar()
-
-	html_home_slpit = html_home.slpit("</head>")
-	html_home = html_home_slpit[0] + "\n" + bokeh_headers + "\n" + hot_users_components["script"] + "\n" + hot_artists_components["script"] + "\n" + "</head>" + html_home_slpit[1]
-	print(html_home)
-
-	html_home = html_home.replace("Graph {{vm.topUsers}}", hot_users_components["div"])
-	html_home = html_home.replace("Graph {{vm.topArtists}}", hot_artists_components["div"])
-	
-	return html_home
 
 
 @app.route('/hot_users', methods=["GET"])
@@ -79,8 +63,8 @@ def hot_artists_bar():
 	if "width" in request_dict and "height" in request_dict:
 		return HotUsers().bar(sample_df, width=int(request_dict["width"]), height=int(request_dict["height"]), plot=False)
 
-	return HotUsers().bar(sample_df, plot=False)
-
+	r = HotUsers().bar(sample_df, plot=False)
+	return jsonify(r)
 
 @app.route('/user_activity')
 def user_activity():

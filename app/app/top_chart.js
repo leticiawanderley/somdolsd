@@ -31,7 +31,8 @@ d3.custom.barChart = function module() {
 
             var xAxis = d3.svg.axis()
                 .scale(x1)
-                .orient('bottom');
+                .orient('bottom')
+                .tickSize(-(height), 0, 0);;
 
             var yAxis = d3.svg.axis()
                 .scale(y1)
@@ -61,6 +62,23 @@ d3.custom.barChart = function module() {
                 .duration(duration)
                 .ease(ease)
                 .call(yAxis);
+
+            svg.selectAll('.tick text') // select all the x tick texts
+               .call(function(t){
+                 t.each(function(d){ // for each one
+                   var self = d3.select(this);
+                   var s = self.text().split(' ');  // get the text and split it
+                   self.text(''); // clear it out
+                   self.append("tspan") // insert two tspans
+                     .attr("x", 0)
+                     .attr("dy",".8em")
+                     .text(s[0]);
+                   self.append("tspan")
+                     .attr("x", 0)
+                     .attr("dy",".8em")
+                     .text(s[1]);
+                 })
+               });
 
             var gapSize = x1.rangeBand() / 100 * gap;
             var barW = x1.rangeBand() - gapSize;
