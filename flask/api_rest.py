@@ -2,13 +2,19 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
 import requests
+import json
 from flask import Flask, request, jsonify, redirect, url_for, send_file
 from sys import argv
 from ast import literal_eval
 from plot.bars import HotUsers
 from html_templater import bokeh_headers
+from pymongo import MongoClient
+from bson import json_util
+
 
 app = Flask(__name__)
+DATABASE = MongoClient().dataset
+
 
 
 
@@ -61,6 +67,11 @@ def hot_artists_bar():
 	r = HotUsers().bar(sample_df, plot=False)
 	return jsonify(r)
 
+@app.route('/user_activity')
+def user_activity():
+	request_dict = request.args.to_dict()
+	cursor = DATABASE.tracks.find({"user_name" : request_dict["username"]})
+	return json.dumps([doc for doc in cursor], default=json_util.default)
 
 @app.after_request
 def after_request(response):
@@ -101,6 +112,6 @@ def after_request(response):
 # 	return template.success_html(name)
 
 if __name__ == '__main__':
-
-	app.run(host="10.30.100.68", port=8080, debug=True)
+	app.run(host="localhost", port=8080, debug=True)
+	# app.run(host="10.30.100.68", port=8080, debug=True)
 

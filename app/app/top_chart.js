@@ -8,23 +8,31 @@ d3.custom.barChart = function module() {
         ease = 'cubic-in-out';
     var svg, duration = 500;
 
+    function selectTop5(data) {
+      data.sort(function(a, b) {
+                   return parseFloat(b.playcount) - parseFloat(a.playcount);
+                 });
+      return data.slice(0, 5);
+    };
+
     function exports(_selection) {
         _selection.each(function(_data) {
-
+            _data = selectTop5(_data);
             var chartW = width - margin.left - margin.right,
                 chartH = height - margin.top - margin.bottom;
 
             var x1 = d3.scale.ordinal()
-                .domain(_data.map(function(d, i){ return d.user; }))
+                .domain(_data.map(function(d, i){ return ((d.user) ? d.user : d.name) }))
                 .rangeRoundBands([0, chartW], .1);
 
             var y1 = d3.scale.linear()
-                .domain([0, d3.max(_data, function(d, i){ return d.hotness; })])
+                .domain([0, d3.max(_data, function(d, i){ return d.playcount; })])
                 .range([chartH, 0]);
 
             var xAxis = d3.svg.axis()
                 .scale(x1)
-                .orient('bottom');
+                .orient('bottom')
+                .tickSize(-(height), 0, 0);;
 
             var yAxis = d3.svg.axis()
                 .scale(y1)
@@ -34,8 +42,7 @@ d3.custom.barChart = function module() {
 
             if(!svg) {
                 svg = d3.select(this)
-                    .append('svg')
-                    .classed('chart', true);
+                    .append('svg');
                 var container = svg.append('g').classed('container-group', true);
                 container.append('g').classed('chart-group', true);
                 container.append('g').classed('x-axis-group axis', true);
@@ -47,9 +54,6 @@ d3.custom.barChart = function module() {
                 .attr({transform: 'translate(' + margin.left + ',' + margin.top + ')'});
 
             svg.select('.x-axis-group.axis')
-                .transition()
-                .duration(duration)
-                .ease(ease)
                 .attr({transform: 'translate(0,' + (chartH) + ')'})
                 .call(xAxis);
 
@@ -58,6 +62,23 @@ d3.custom.barChart = function module() {
                 .duration(duration)
                 .ease(ease)
                 .call(yAxis);
+
+            svg.selectAll('.tick text') // select all the x tick texts
+               .call(function(t){
+                 t.each(function(d){ // for each one
+                   var self = d3.select(this);
+                   var s = self.text().split(' ');  // get the text and split it
+                   self.text(''); // clear it out
+                   self.append("tspan") // insert two tspans
+                     .attr("x", 0)
+                     .attr("dy",".8em")
+                     .text(s[0]);
+                   self.append("tspan")
+                     .attr("x", 0)
+                     .attr("dy",".8em")
+                     .text(s[1]);
+                 })
+               });
 
             var gapSize = x1.rangeBand() / 100 * gap;
             var barW = x1.rangeBand() - gapSize;
@@ -68,17 +89,17 @@ d3.custom.barChart = function module() {
                 .classed('bar', true)
                 .attr({x: chartW,
                     width: barW,
-                    y: function(d, i) { return y1(d.hotness); },
-                    height: function(d, i) { return chartH - y1(d.hotness); }
+                    y: function(d, i) { return y1(d.playcount); },
+                    height: function(d, i) { return chartH - y1(d.playcount); }
                 });
             bars.transition()
                 .duration(duration)
                 .ease(ease)
                 .attr({
                     width: barW,
-                    x: function(d, i) { return x1(d.user) + gapSize/2; },
-                    y: function(d, i) { return y1(d.hotness); },
-                    height: function(d, i) { return chartH - y1(d.hotness); }
+                    x: function(d, i) { return x1(((d.user) ? d.user : d.name)) + gapSize/2; },
+                    y: function(d, i) { return y1(d.playcount); },
+                    height: function(d, i) { return chartH - y1(d.playcount); }
                 });
             bars.exit().transition().style({opacity: 0}).remove();
 

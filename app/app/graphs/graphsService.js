@@ -4,24 +4,17 @@ var somDoLSD = angular.module('somDoLSD');
 somDoLSD.factory('graphsService', function($http) {
   var graphsService = {
     getTopUsers: function() {
-      // $http returns a promise, which has a then function, which also returns a promise
-      var promise = $http.get('http://10.30.100.68:8080/hot_users').then(function (response) {
-        // The then function here is an opportunity to modify the response
+      var promise = $http.get('http://10.30.0.33:8080/top_users').then(function (response) {
         console.log(response);
-        // The return value gets picked up by the then in the controller.
         return response.data;
       });
-      // Return the promise to the controller
       return promise;
     },
     getTopArtists: function() {
-      var promise = $http.get('test.csv').then(function (response) {
-        // The then function here is an opportunity to modify the response
+      var promise = $http.get('http://10.30.0.33:8080/top_artists').then(function (response) {
         console.log(response);
-        // The return value gets picked up by the then in the controller.
         return response.data;
       });
-      // Return the promise to the controller
       return promise;
     }
   };
