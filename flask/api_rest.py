@@ -11,7 +11,13 @@ app = Flask(__name__)
 
 @app.route("/")
 def homepage():
-    return "home"
+    return '''
+    URLS DISPONIVEIS
+    hot_users
+    hot_users_bar
+    hot_artists
+    hot_artists_bar
+    '''
 
 @app.route('/hot_users', methods=["GET"])
 def hot_users():
