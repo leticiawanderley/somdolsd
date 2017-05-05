@@ -1,23 +1,32 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import pandas as pd
-from flask import Flask, request, jsonify, redirect, url_for
+import requests
+from flask import Flask, request, jsonify, redirect, url_for, send_file
 from sys import argv
 from ast import literal_eval
-
 from plot.bars import HotUsers
+from html_templater import bokeh_headers
 
 app = Flask(__name__)
 
 @app.route("/")
 def homepage():
-    return '''
-    URLS DISPONIVEIS
-    hot_users
-    hot_users_bar
-    hot_artists
-    hot_artists_bar
-    '''
+	html_url = "http://10.30.100.60:8000"
+	html_home = str(requests.get(html_url).text)
+
+	hot_users_components = hot_users_bar()
+	hot_artists_components = hot_artists_bar()
+
+	html_home_slpit = html_home.slpit("</head>")
+	html_home = html_home_slpit[0] + "\n" + bokeh_headers + "\n" + hot_users_components["script"] + "\n" + hot_artists_components["script"] + "\n" + "</head>" + html_home_slpit[1]
+	print(html_home)
+
+	html_home = html_home.replace("Graph {{vm.topUsers}}", hot_users_components["div"])
+	html_home = html_home.replace("Graph {{vm.topArtists}}", hot_artists_components["div"])
+	
+	return html_home
+
 
 @app.route('/hot_users', methods=["GET"])
 def hot_users():
@@ -33,17 +42,48 @@ def hot_artists():
 def hot_users_bar():
 	sample = literal_eval(hot_users().data)
 	sample_df = pd.DataFrame.from_dict(sample)
-	return HotUsers().bar(sample_df, plot=False)
+
+	request_dict = request.args.to_dict()
+
+	if "width" in request_dict and "height" in request_dict:
+		return HotUsers().bar(sample_df, width=int(request_dict["width"]), height=int(request_dict["height"]), plot=False)
+
+	r = HotUsers().bar(sample_df, plot=False)
+	return jsonify(r)
+
+@app.route('/hot_users_bar2')
+def hot_users_bar2():
+	sample = literal_eval(hot_users().data)
+	sample_df = pd.DataFrame.from_dict(sample)
+
+	request_dict = request.args.to_dict()
+
+	if "width" in request_dict and "height" in request_dict:
+		return HotUsers().bar(sample_df, width=int(request_dict["width"]), height=int(request_dict["height"]), plot=False)
+
+	r = HotUsers().bar2(sample_df, plot=False)
+	return (r)
 
 @app.route('/hot_artists_bar')
 def hot_artists_bar():
 	sample = literal_eval(hot_artists().data)
 	sample_df = pd.DataFrame.from_dict(sample)
+
+	request_dict = request.args.to_dict()
+
+	if "width" in request_dict and "height" in request_dict:
+		return HotUsers().bar(sample_df, width=int(request_dict["width"]), height=int(request_dict["height"]), plot=False)
+
 	return HotUsers().bar(sample_df, plot=False)
 
 
 
-
+@app.after_request
+def after_request(response):
+  response.headers.add('Access-Control-Allow-Origin', '*')
+  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+  return response
 
 # @app.route('/wordcount', methods=["GET"])
 # def wordcount2():
