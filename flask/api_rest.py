@@ -15,7 +15,7 @@ def homepage():
 @app.route('/hot_users', methods=["GET"])
 def hot_users():
 	sample = [{"index":2,"user":"Listener","hotness":59},{"index":1,"user":"Cicranis","hotness":43},{"index":0,"user":"Fulano da Silva","hotness":30},{"index":5,"user":"Hackeador","hotness":30},{"index":3,"user":"Lorem Ipsum","hotness":25},{"index":4,"user":"Bla bla","hotness":11}]
-	return sample
+	return jsonify(sample)
 
 @app.route('/hot_users_bar', methods=["GET"])
 def hot_users_bar():
