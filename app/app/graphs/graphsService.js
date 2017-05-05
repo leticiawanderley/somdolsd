@@ -2,7 +2,6 @@
 
 var somDoLSD = angular.module('somDoLSD');
 somDoLSD.factory('graphsService', function($http) {
-  var promise;
   var graphsService = {
     getTopUsers: function() {
       // $http returns a promise, which has a then function, which also returns a promise

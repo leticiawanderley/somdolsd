@@ -1,8 +1,17 @@
 /* app css stylesheet */
+html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Lato', sans-serif;
   font-size: 1.8em;
   color: rgba(229, 80, 80, 0.5);
+  position: relative;
+  margin: 0;
+  padding-bottom: 6rem;
+  min-height: 100%;
 }
 
 h1 {
@@ -18,9 +27,14 @@ h3 {
   font-family: 'Permanent Marker', cursive;
 }
 
-footer {
+.footer {
   margin-top: 30px;
   padding-top: 70px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  text-align: center;
   background-color: rgba(229, 80, 80, 0.5);
 }
 
@@ -40,10 +54,14 @@ footer {
     text-align: right;
 }
 
-.btn-add button {
+.btn-add input {
   background-color: transparent;
   font-family: 'Permanent Marker', cursive;
   border: 0;
   color: rgb(0,0,0);
   font-size: 25px;
+}
+
+.graphs-title {
+  color: rgb(0,0,0);
 }

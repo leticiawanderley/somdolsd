@@ -1,11 +1,11 @@
-<div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-12">
-  <form>
+<div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-12 register" ng-controller="registerController as vm">
+  <form ng-submit="vm.add()">
     <div class="row form-add">
       <label for="username">Digite o seu username Last.fm</label>
       <input id="username" ng-model="vm.username" type="text"/>
     </div>
     <div class="row btn-add">
-      <button type="submit">Adicionar</button>
+      <input type="submit" value="Adicionar"/>
     </div>
   </form>
 </div>
