@@ -11,6 +11,7 @@ class HotUsers:
 
 	def bar(self, hot_users, top=5, plot=False):
 
+		hot_users = hot_users.sort_values("hotness", ascending=False)
 		bar = Bar(data=hot_users.head(top), values='hotness', 
 					label=cat(columns='user',sort=False),
 				    color="blue", width=800, height=300, legend=False)
