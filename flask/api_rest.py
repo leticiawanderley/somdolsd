@@ -22,7 +22,7 @@ def hot_users():
 def hot_users_bar():
 	sample = literal_eval(hot_users().data)
 	sample_df = pd.DataFrame.from_dict(sample)
-	return HotUsers().bar(sample, plot=False)
+	return HotUsers().bar(sample_df, plot=False)
 
 
 

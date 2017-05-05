@@ -9,9 +9,9 @@ class HotUsers:
 	def __init__(self):
 		pass
 
-	def bar(self, hot_users, plot=False):
+	def bar(self, hot_users, top=5, plot=False):
 
-		bar = Bar(data=hot_users, values='hotness', 
+		bar = Bar(data=hot_users.head(top), values='hotness', 
 					label=cat(columns='user',sort=False),
 				    color="blue", width=800, height=300, legend=False)
 
