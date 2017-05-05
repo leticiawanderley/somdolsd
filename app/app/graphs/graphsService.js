@@ -2,11 +2,10 @@
 
 var somDoLSD = angular.module('somDoLSD');
 somDoLSD.factory('graphsService', function($http) {
-  var promise;
   var graphsService = {
     getTopUsers: function() {
       // $http returns a promise, which has a then function, which also returns a promise
-      var promise = $http.get('test.csv').then(function (response) {
+      var promise = $http.get('http://10.30.100.68:8080/hot_users').then(function (response) {
         // The then function here is an opportunity to modify the response
         console.log(response);
         // The return value gets picked up by the then in the controller.
