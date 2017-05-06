@@ -85,6 +85,14 @@ d3.custom.barChart = function module() {
                      .attr("x", 0)
                      .attr("dy",".8em")
                      .text(s[1]);
+                  self.append("tspan")
+                      .attr("x", 0)
+                       .attr("dy",".8em")
+                       .text(s[2]);
+                       self.append("tspan")
+                         .attr("x", 0)
+                         .attr("dy",".8em")
+                         .text(s[3]);
                  })
                });
 
@@ -98,7 +106,7 @@ d3.custom.barChart = function module() {
                 .attr({x: chartW,
                     width: barW,
                     y: function(d, i) { return y1(d.playcount); },
-                    height: function(d, i) { return chartH - (10 + y1(d.playcount)) }
+                    height: function(d, i) { return chartH - y1(d.playcount) }
                 });
             bars.transition()
                 .duration(duration)
@@ -107,7 +115,7 @@ d3.custom.barChart = function module() {
                     width: barW,
                     x: function(d, i) { return x1(userOrName(d)) + gapSize/2; },
                     y: function(d, i) { return y1(d.playcount); },
-                    height: function(d, i) { return chartH - (10 + y1(d.playcount)); }
+                    height: function(d, i) { return chartH - y1(d.playcount); }
                 });
             bars.exit().transition().style({opacity: 0}).remove();
 
