@@ -1,5 +1,7 @@
 'use strict';
 
 var somDoLSD = angular.module('somDoLSD');
-somDoLSD.controller('groupsController', function($scope, graphsService) {
+somDoLSD.controller('groupsController', function($location) {
+
+
 });
