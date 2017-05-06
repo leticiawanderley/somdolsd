@@ -3,7 +3,7 @@
 // Declare app level module which depends on views, and components
 angular.module('somDoLSD', [
   'ngRoute',
-  'ngSanitize'
+  'ngAnimate'
 ]).
 config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
   $locationProvider.hashPrefix('!');
@@ -15,6 +15,10 @@ config(['$locationProvider', '$routeProvider', function($locationProvider, $rout
   .when('/register', {
   		templateUrl: 'register/register.html',
 	    controller: 'registerController'
+	})
+  .when('/groups', {
+  		templateUrl: 'groups/groups.html',
+	    controller: 'groupsController'
 	})
   .otherwise({redirectTo: '/'});
 }]);

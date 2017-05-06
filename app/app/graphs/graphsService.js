@@ -16,6 +16,20 @@ somDoLSD.factory('graphsService', function($http) {
         return response.data;
       });
       return promise;
+    },
+    getTopTracks: function() {
+      var promise = $http.get('http://10.30.0.33:8080/top_tracks').then(function (response) {
+        console.log(response);
+        return response.data;
+      });
+      return promise;
+    },
+    getTopTags: function() {
+      var promise = $http.get('http://10.30.0.33:8080/top_tags').then(function (response) {
+        console.log(response);
+        return response.data;
+      });
+      return promise;
     }
   };
   return graphsService;

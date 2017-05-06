@@ -3,9 +3,9 @@
 var somDoLSD = angular.module('somDoLSD');
 somDoLSD.factory('registerService', function($http) {
   var registerService = {
-    addUsername: function(username) {
+    addUsername: function(user) {
       var config = [];
-      var promise = $http.post('/add', username, config).then(function (response) {
+      var promise = $http.post('/add', user, config).then(function (response) {
         console.log(response);
         return response.data;
       });

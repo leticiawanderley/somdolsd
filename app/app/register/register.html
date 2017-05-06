@@ -2,15 +2,15 @@
   <form ng-submit="vm.add()">
     <div class="row form-add">
       <div><label for="username">Digite o seu username Last.fm</label></div>
-      <div><input id="username" ng-model="vm.username" type="text"/></div>
+      <div><input id="username" ng-model="vm.user.username" type="text"/></div>
     </div>
     <div class="row form-add">
       <div><label for="nome">Digite o seu nome</label></div>
-      <div><input id="nome" ng-model="vm.nome" type="text"/></div>
+      <div><input id="nome" ng-model="vm.user.name" type="text"/></div>
     </div>
     <div class="row form-add">
       <div><label for="sala">Selecione a sua sala</label></div>
-      <div><select id="sala" ng-model="vm.sala" ng-options="s for s in vm.salas"></select></div>
+      <div><select id="sala" ng-model="vm.user.sala" ng-options="s for s in vm.salas"></select></div>
     </div>
     <div class="row btn-add">
       <input type="submit" value="Adicionar"/>
