@@ -58,7 +58,7 @@ d3.custom.barChart = function module() {
                 .attr({transform: 'translate(' + margin.left + ',' + margin.top + ')'});
 
             svg.select('.x-axis-group.axis')
-                .attr({transform: 'translate(-10,' + (chartH - 60) + ')'})
+                .attr({transform: 'translate(-10,' + (chartH - 70) + ')'})
                 .call(xAxis);
 
             svg.select('.y-axis-group.axis')
@@ -85,7 +85,7 @@ d3.custom.barChart = function module() {
                      .attr("x", 0)
                      .attr("dy",".8em")
                      .text(s[1]);
-                  self.append("tspan")
+                     self.append("tspan")
                       .attr("x", 0)
                        .attr("dy",".8em")
                        .text(s[2]);
