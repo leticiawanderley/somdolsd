@@ -34,6 +34,14 @@ def get_song_tags(track, artist):
 	except:
 		pass
 
+def get_artist_tags(artist):
+	api_call = 'http://ws.audioscrobbler.com/2.0/?method=artist.getTopTags&api_key=' + API_KEY + '&artist=' + artist + '&limit=10&format=json'
+	try:
+		response = requests.get(api_call)
+		return response.json()
+	except:
+		pass
+
 if __name__ == '__main__':
 	while True:
 		cursor_users = DATABASE.users.find()
@@ -48,7 +56,7 @@ if __name__ == '__main__':
 				# TODO: Check time (users can listen to the same song multiple times)
 				# TODO: Check if there's more than one song to be processed
 				if last_played_song != "%s - %s" % (last_song_info["music_name"], last_song_info["artist_name"]):	
-					
+
 					# Updating user last_song for control purposes
 					result = DATABASE.users.update_one(
 					    {"last_fm_username": username},
@@ -61,7 +69,10 @@ if __name__ == '__main__':
 
 					# Increment last listening activity
 					last_song_info["listening_time"] = datetime.now().isoformat()
-					last_song_info["tags"] =  get_song_tags(last_song_info["music_name"], last_song_info["artist_name"])["toptags"]["tag"]
+					try:
+						last_song_info["tags"] =  get_song_tags(last_song_info["music_name"], last_song_info["artist_name"])["toptags"]["tag"]
+					except:
+						pass
 					last_song_info["user"] = document["name"]
 
 					# Storing listening activity

@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 import requests, json
 from operator import itemgetter
+from pymongo import MongoClient
 import time
 
 API_KEY = '3f65c66d50219f19adf936214025f697'
 WEEK_UNIX_DIFFERENCE = 604800
-USERS = [user['last_fm_username'] for user in (requests.get('http://10.11.4.160:8080/users').json())]
+
+DATABASE = MongoClient().dataset
+cursor = DATABASE.users.find()
+
+USERS = [user['last_fm_username'] for user in cursor]
 
 def get_top_albums_from_user(user):
 	api_call = 'http://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&user=' + user + '&api_key=' + API_KEY + '&period=7day&limit=10&format=json'
