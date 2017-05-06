@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
 import requests
+from the_clusters import radar_data, get_tag_df, clusters
 import json
 from flask import Flask, request, jsonify, redirect, url_for, send_file
 from sys import argv
@@ -10,7 +11,6 @@ from plot.bars import HotUsers
 from html_templater import bokeh_headers
 from pymongo import MongoClient
 from bson import json_util
-from clustering.close_users import radar_data, get_tag_df, clusters
 
 app = Flask(__name__)
 DATABASE = MongoClient().dataset
