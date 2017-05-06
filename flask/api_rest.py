@@ -10,12 +10,19 @@ from plot.bars import HotUsers
 from html_templater import bokeh_headers
 from pymongo import MongoClient
 from bson import json_util
+from clustering.close_users import radar_data, get_tag_df, clusters
 
 app = Flask(__name__)
 DATABASE = MongoClient().dataset
 
 
+@app.route('/clusters', methods=["GET"])
+def clusters():
+	data = get_tag_df()
+	radar = radar_data(data)
+	clusters = clusters(data)
 
+	return {"radar": radar, "clusters": clusters}
 
 @app.route('/hot_users', methods=["GET"])
 def hot_users():
