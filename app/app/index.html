@@ -19,15 +19,20 @@
   <link rel="stylesheet" href="styles/app.css">
   <script src="bower_components/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
 </head>
-<body>
+<body ng-controller="mainController as main">
   <div class="container">
-		<div class="row" ng-controller="mainController as main">
+		<div class="row" >
 			<div class="col-lg-5 col-md-8 col-sm-10">
 				<header>
 					<h1 ng-click="main.mainPage()">Som do LSD</span></h1>
 				</header>
       </div>
-      <div class="col-lg-1 col-lg-offset-6 col-md-2 col-md-offset-2 col-sm-2">
+      <div class="col-lg-1 col-lg-offset-5 col-md-2 col-sm-2">
+				<button class="btn-register" ng-click="main.groups()">
+					<h4 class="headers">Grupos</h4>
+				</button>
+			</div>
+      <div class="col-lg-1 col-md-2 col-sm-2">
 				<button class="btn-register" ng-click="main.register()">
 					<h4 class="headers">Cadastro</h4>
 				</button>
@@ -42,18 +47,21 @@
       <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
     -->
   </div>
-	<div class="footer"></div>
+	<div class="footer">
+  </div>
 
   <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
   <script src="top_chart.js"></script>
   <script src="bower_components/angular/angular.js"></script>
   <script src="bower_components/angular-route/angular-route.js"></script>
-  <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+  <script src="bower_components/angular-animate/angular-animate.js"></script>
   <script src="app.js"></script>
   <script src="main/mainController.js"></script>
   <script src="graphs/graphsService.js"></script>
   <script src="graphs/graphsController.js"></script>
   <script src="register/registerService.js"></script>
   <script src="register/registerController.js"></script>
+  <script src="groups/groupsController.js"></script>
+  <script src="groups/RadarChart.js"></script>
 </body>
 </html>

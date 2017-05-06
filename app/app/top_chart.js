@@ -10,9 +10,14 @@ d3.custom.barChart = function module() {
 
     function selectTop5(data) {
       data.sort(function(a, b) {
-                   return parseFloat(b.playcount) - parseFloat(a.playcount);
-                 });
+          return parseFloat(b.playcount) - parseFloat(a.playcount)
+      });
       return data.slice(0, 5);
+    };
+
+    function userOrName(d) {
+      return ((d.user) ? d.user : d.name) + ' ' +
+        ((d.artist_name) ? d.artist_name : ' ');
     };
 
     function exports(_selection) {
@@ -22,7 +27,7 @@ d3.custom.barChart = function module() {
                 chartH = height - margin.top - margin.bottom;
 
             var x1 = d3.scale.ordinal()
-                .domain(_data.map(function(d, i){ return ((d.user) ? d.user : d.name) }))
+                .domain(_data.map(function(d, i){ return userOrName(d)}))
                 .rangeRoundBands([0, chartW], .1);
 
             var y1 = d3.scale.linear()
@@ -31,8 +36,7 @@ d3.custom.barChart = function module() {
 
             var xAxis = d3.svg.axis()
                 .scale(x1)
-                .orient('bottom')
-                .tickSize(-(height), 0, 0);;
+                .orient('bottom');
 
             var yAxis = d3.svg.axis()
                 .scale(y1)
@@ -54,7 +58,7 @@ d3.custom.barChart = function module() {
                 .attr({transform: 'translate(' + margin.left + ',' + margin.top + ')'});
 
             svg.select('.x-axis-group.axis')
-                .attr({transform: 'translate(0,' + (chartH) + ')'})
+                .attr({transform: 'translate(-10,' + (chartH - 60) + ')'})
                 .call(xAxis);
 
             svg.select('.y-axis-group.axis')
@@ -63,8 +67,12 @@ d3.custom.barChart = function module() {
                 .ease(ease)
                 .call(yAxis);
 
-            svg.selectAll('.tick text') // select all the x tick texts
-               .call(function(t){
+            svg.selectAll('.x-axis-group.axis text') // select all the x tick texts
+              .style("text-anchor", "end")
+              .attr("transform", function(d) {
+                  return "rotate(-65)"
+              })
+              .call(function(t){
                  t.each(function(d){ // for each one
                    var self = d3.select(this);
                    var s = self.text().split(' ');  // get the text and split it
@@ -90,16 +98,16 @@ d3.custom.barChart = function module() {
                 .attr({x: chartW,
                     width: barW,
                     y: function(d, i) { return y1(d.playcount); },
-                    height: function(d, i) { return chartH - y1(d.playcount); }
+                    height: function(d, i) { return chartH - (10 + y1(d.playcount)) }
                 });
             bars.transition()
                 .duration(duration)
                 .ease(ease)
                 .attr({
                     width: barW,
-                    x: function(d, i) { return x1(((d.user) ? d.user : d.name)) + gapSize/2; },
+                    x: function(d, i) { return x1(userOrName(d)) + gapSize/2; },
                     y: function(d, i) { return y1(d.playcount); },
-                    height: function(d, i) { return chartH - y1(d.playcount); }
+                    height: function(d, i) { return chartH - (10 + y1(d.playcount)); }
                 });
             bars.exit().transition().style({opacity: 0}).remove();
 
