@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 import requests, json
 from operator import itemgetter
+import time
 
 API_KEY = '3f65c66d50219f19adf936214025f697'
-USERS = ['danielgem','talitaL','FelipeVF']
+WEEK_UNIX_DIFFERENCE = 604800
+USERS = [user['last_fm_username'] for user in (requests.get('http://10.11.4.160:8080/users').json())]
 
 def get_top_albums_from_user(user):
-	api_call = 'http://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&user=' + user + '&api_key=' + API_KEY + '&limit=10&format=json'
+	api_call = 'http://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&user=' + user + '&api_key=' + API_KEY + '&period=7day&limit=10&format=json'
 	filtered_rank = []
 	try:
 		response = requests.get(api_call)
@@ -35,7 +37,7 @@ def get_top_albums():
 	return sorted(top_albums, key=itemgetter('playcount'), reverse=True)
 
 def get_top_artists_from_user(user):
-	api_call = 'http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=' + user + '&api_key=' + API_KEY + '&limit=10&format=json'
+	api_call = 'http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=' + user + '&api_key=' + API_KEY + '&period=7day&limit=10&format=json'
 	filtered_rank = []
 	try:
 		response = requests.get(api_call)
@@ -64,11 +66,13 @@ def get_top_artists():
 	return sorted(top_artists, key=itemgetter('playcount'), reverse=True) 
 
 def get_num_of_scrobbles_from_user(user):
-	api_call = 'http://ws.audioscrobbler.com/2.0/?method=user.getinfo&user=' + user + '&api_key=' + API_KEY + '&format=json'
+	until = int(time.time())
+	since = until - WEEK_UNIX_DIFFERENCE
+	api_call = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + user + '&api_key=' + API_KEY + '&from=' + str(since) + '&to=' + str(until) + '&limit=1&format=json'
 	try:
 		response = requests.get(api_call)
 		data = response.json()
-		return int(data['user']['playcount'])
+		return int(data['recenttracks']['@attr']['total'])
 	except:
 		return -1
 
@@ -80,7 +84,7 @@ def get_top_users():
 	return sorted(top_users, key=itemgetter('playcount'), reverse=True)
 
 def get_top_tracks_from_user(user):
-	api_call = 'http://ws.audioscrobbler.com/2.0/?method=user.gettoptracks&user=' + user + '&api_key=' + API_KEY + '&limit=10&format=json'
+	api_call = 'http://ws.audioscrobbler.com/2.0/?method=user.gettoptracks&user=' + user + '&api_key=' + API_KEY + '&period=7day&limit=10&format=json'
 	filtered_rank = []
 	try:
 		response = requests.get(api_call)
@@ -106,7 +110,8 @@ def get_top_tracks():
 					break
 			if not found:
 				top_tracks.append(current_top_track)
-	return sorted(top_tracks, key=itemgetter('playcount'), reverse=True)
+	top_tracks = sorted(top_tracks, key=itemgetter('playcount'), reverse=True)
+	return top_tracks
 
 def playing_now_from_user(user):
 	api_call = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + user + '&api_key=' + API_KEY + '&limit=10&format=json'
@@ -130,7 +135,63 @@ def get_now_playing():
 	now_playing = []
 	for user in USERS:
 		current_user_playing = playing_now_from_user(user)
-		print current_user_playing
 		if current_user_playing != {}:
 			now_playing.append(current_user_playing)
 	return now_playing
+
+def get_top_tag_from_song(artist_name, song_name):
+	api_call = 'http://ws.audioscrobbler.com/2.0/?method=track.gettoptags&api_key=' + API_KEY + '&artist=' + artist_name + '&track=' + song_name + '&format=json'
+	tag = {}
+	try:
+		response = requests.get(api_call)
+		data = response.json()
+		tags = data['toptags']['tag']
+		if len(tags) > 0:
+			return tags[0]
+		else:
+			return {}
+	except:
+		pass
+	return tag
+
+def get_top_tags_from_user(user, limit):
+	api_call = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + user + '&api_key=' + API_KEY + '&limit=' + limit + '&format=json'
+	now_playing = {}
+	top_tags = []
+	try:
+		response = requests.get(api_call)
+		data = response.json()
+		tracks = data['recenttracks']['track']
+		for track in tracks:
+			found = False
+			tag = get_top_tag_from_song(track['artist']['#text'], track['name'])
+			if tag != {}:
+				for current_tag in top_tags:
+					if current_tag['name'] == tag['name']:
+						current_tag['playcount'] += 1
+						found = True
+						break
+				if not found:
+					top_tags.append({'name':tag['name'],'playcount':1})
+		return sorted(top_tags, key=itemgetter('playcount'), reverse=True)
+	except:
+		return top_tags
+	return top_tags
+
+def get_top_tags():
+	top_tags = []
+	for user in USERS:
+		current_tags = get_top_tags_from_user(user,'10')
+		for tag in current_tags:
+			found = False
+			for current_tag in top_tags:
+				if current_tag['name'] == tag['name']:
+						current_tag['playcount'] += tag['playcount']
+						found = True
+						break
+			if not found:
+				top_tags.append({'name':tag['name'],'playcount':tag['playcount']})
+	return sorted(top_tags, key=itemgetter('playcount'), reverse=True)
+
+def get_artists_to_add():
+	return [artist['name'] for artist in get_top_artists()][:5]

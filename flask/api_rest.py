@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
 import requests
+import lastfm
+from the_clusters import radar_data, get_tag_df, clusters
 import json
 from flask import Flask, request, jsonify, redirect, url_for, send_file
 from sys import argv
@@ -15,7 +17,13 @@ app = Flask(__name__)
 DATABASE = MongoClient().dataset
 
 
+@app.route('/clusters', methods=["GET"])
+def clusters():
+	data = get_tag_df()
+	radar = radar_data(data)
+	clusters = clusters(data)
 
+	return {"radar": radar, "clusters": clusters}
 
 @app.route('/hot_users', methods=["GET"])
 def hot_users():
@@ -94,6 +102,31 @@ def create_user():
 def get_users():
 	cursor = DATABASE.users.find()
 	return json.dumps([doc for doc in cursor], default=json_util.default)
+
+#codigo de daniel a partir daqui
+@app.route('/top_users', methods=["GET"])
+def top_users():
+	return jsonify(lastfm.get_top_users())
+
+@app.route('/top_artists', methods=["GET"])
+def top_artists():
+	return jsonify(lastfm.get_top_artists())
+
+@app.route('/top_albums', methods=["GET"])
+def top_albums():
+	return jsonify(lastfm.get_top_albums())
+
+@app.route('/top_tracks', methods=["GET"])
+def top_tracks():
+	return jsonify(lastfm.get_top_tracks())
+
+@app.route('/now_playing', methods=["GET"])
+def now_playing():
+	return jsonify(lastfm.get_now_playing())
+
+@app.route('/top_tags', methods=["GET"])
+def top_tags():
+	return jsonify(lastfm.get_top_tags())
 
 
 @app.after_request
