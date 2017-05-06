@@ -5,7 +5,7 @@ from sklearn.cluster import KMeans
 def distance(userA, userB):
 	return len(set(userA["tags"]).intersection(userB["tags"]))
 
-def clusters(data, n_clusters):
+def clusters(data, n_clusters=3):
 	#user, tag
 	#usrA, genero1
 	#usrA, genero1
